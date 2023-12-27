@@ -19,4 +19,8 @@ export class TokenService {
     };
     return jwt.sign(payload, this.jwtSecret, options);
   }
+
+  verifyJwt(token: string): any {
+    return jwt.verify(token, this.jwtSecret);
+  }
 }

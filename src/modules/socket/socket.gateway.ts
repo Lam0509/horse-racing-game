@@ -1,6 +1,7 @@
 import {
   WebSocketGateway,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   WebSocketServer,
   SubscribeMessage,
   WsResponse,
@@ -12,7 +13,7 @@ import { SocketAuthGuard } from './socket.auth.guard';
 import { EVENT } from './event.name.constant';
 
 @WebSocketGateway()
-export class SocketGateway implements OnGatewayConnection {
+export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   private server: Socket;
 
@@ -22,6 +23,10 @@ export class SocketGateway implements OnGatewayConnection {
     this.socketService.handleConnection(socket);
   }
 
+  handleDisconnect(socket: Socket) {
+      
+  }
+  
   @UseGuards(SocketAuthGuard)
   @SubscribeMessage(EVENT.TEST)
   handleEventTest(socket: Socket, data: unknown): void {

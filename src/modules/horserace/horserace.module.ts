@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from '../user/user.module';
-import { HorseRaceGateway } from './horserace.gateway';
 import { SocketModule } from '../socket/socket.module';
+import { HorseRaceGateway } from './horserace.gateway';
+import { HorseRaceService } from './horserace.service';
 
 @Module({
     imports: [
@@ -10,6 +11,7 @@ import { SocketModule } from '../socket/socket.module';
     ],
     providers: [
         HorseRaceGateway,
+        HorseRaceService
     ],
 })
 export class HorseRaceModule { }
