@@ -4,12 +4,9 @@ import {
   OnGatewayDisconnect,
   WebSocketServer,
   SubscribeMessage,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { SocketService } from './socket.service';
-import { UseGuards } from '@nestjs/common';
-import { SocketAuthGuard } from './socket.auth.guard';
 import { EVENT } from './event.name.constant';
 
 @WebSocketGateway()
@@ -24,10 +21,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(socket: Socket) {
-      
+    // Handle disconnect
   }
-  
-  @UseGuards(SocketAuthGuard)
+
   @SubscribeMessage(EVENT.TEST)
   handleEventTest(socket: Socket, data: unknown): void {
     // handle event

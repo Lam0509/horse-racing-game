@@ -16,14 +16,10 @@ export class EvmService {
     address: string,
     signedMessage: string,
   ): Promise<boolean> {
-    try {
-      const signer = await ethers.verifyMessage(
-        this.signedMessage,
-        signedMessage,
-      );
-      return signer === address;
-    } catch (err) {
-      this.logger.error(err);
-    }
+    const signer = await ethers.verifyMessage(
+      this.signedMessage,
+      signedMessage,
+    );
+    return signer === address;
   }
 }
