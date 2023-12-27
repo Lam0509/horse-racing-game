@@ -23,5 +23,8 @@ export class TokenService {
     } catch (err) {
       this.logger.error(err);
     }
+
+  verifyJwt(token: string): any {
+    return jwt.verify(token, this.jwtSecret);
   }
 }
