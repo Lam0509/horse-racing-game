@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class TokenService {
+  private readonly logger = new Logger(TokenService.name);
   private readonly jwtSecret: string;
   private readonly accessTokenExpiry: string;
   constructor(private readonly configService: ConfigService) {
@@ -14,9 +15,13 @@ export class TokenService {
   }
 
   signJwt(payload: object): string {
-    const options = {
-      expiresIn: this.accessTokenExpiry,
-    };
-    return jwt.sign(payload, this.jwtSecret, options);
+    try {
+      const options = {
+        expiresIn: this.accessTokenExpiry,
+      };
+      return jwt.sign(payload, this.jwtSecret, options);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 }
