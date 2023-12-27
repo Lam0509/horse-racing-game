@@ -4,15 +4,14 @@ import { HORSE_RACE_EVENT } from './horserace.event.constant';
 
 @Injectable()
 export class HorseRaceService {
+  constructor() {}
 
-    constructor() { }
+  handleConnection(socket: Socket) {
+    if (socket.handshake.query.gameId !== 'horse-race') return;
+    socket.emit(HORSE_RACE_EVENT.SEND_INFO, 'horse race game');
+  }
 
-    handleConnection(socket: Socket) {
-        if (socket.handshake.query.gameId !== 'horse-race') return;
-        socket.emit(HORSE_RACE_EVENT.SEND_INFO, 'horse race game');
-    }
-
-    handleDisconnect(socket: Socket) {
-
-    }
+  handleDisconnect(socket: Socket) {
+    // Handle disconnect
+  }
 }

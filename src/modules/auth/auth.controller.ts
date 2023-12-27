@@ -18,6 +18,7 @@ export class AuthController {
       return await this.authService.logIn(address, signedMessage);
     } catch (err) {
       this.logger.error(err);
+      throw err;
     }
   }
 }

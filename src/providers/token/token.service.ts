@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
+import { JwtLoginPayload } from './token.dto';
 
 @Injectable()
 export class TokenService {
@@ -14,18 +15,14 @@ export class TokenService {
     );
   }
 
-  signJwt(payload: object): string {
-    try {
-      const options = {
-        expiresIn: this.accessTokenExpiry,
-      };
-      return jwt.sign(payload, this.jwtSecret, options);
-    } catch (err) {
-      this.logger.error(err);
-    }
+  signJwt(payload: JwtLoginPayload): string {
+    const options = {
+      expiresIn: this.accessTokenExpiry,
+    };
+    return jwt.sign(payload, this.jwtSecret, options);
   }
 
-  verifyJwt(token: string): any {
+  verifyJwt(token: string): JwtLoginPayload {
     return jwt.verify(token, this.jwtSecret);
   }
 }
