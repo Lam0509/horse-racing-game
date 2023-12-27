@@ -5,6 +5,7 @@ services:
     restart: always
   app:
     build: .
+    image: myapp:latest
     ports:
       - '3000:3000'
     depends_on:
