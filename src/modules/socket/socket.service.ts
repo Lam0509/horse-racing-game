@@ -7,6 +7,8 @@ import {
 import { Socket } from 'socket.io';
 import { TokenService } from '../../providers/token/token.service';
 import { UserService } from '../user/user.service';
+import { CacheService } from '../../providers/cache/cache.service';
+import { UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class SocketService {
@@ -14,7 +16,8 @@ export class SocketService {
   constructor(
     private tokenService: TokenService,
     private readonly userService: UserService,
-  ) {}
+    private cacheService: CacheService
+  ) { }
 
   private readonly sockets: Map<string, Socket> = new Map();
 
@@ -30,7 +33,8 @@ export class SocketService {
         throw new UnauthorizedException();
       }
 
-      const user = await this.userService.findByAddress(data.address);
+      const user: UserDocument = this.cacheService.getUser(data.address) ||
+        await this.userService.findByAddress(data.address);
 
       if (!user) {
         this.logger.log(`No user found!`);
@@ -40,6 +44,7 @@ export class SocketService {
       this.logger.log(`Address ${user.address} connected!`);
 
       // Save to cache
+      socket['address'] = user.address;
       this.sockets.set(socket.id, socket);
     } catch (err) {
       socket.disconnect();
