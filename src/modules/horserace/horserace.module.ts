@@ -3,11 +3,15 @@ import { UserModule } from '../user/user.module';
 import { SocketModule } from '../socket/socket.module';
 import { HorseRaceGateway } from './horserace.gateway';
 import { HorseRaceService } from './horserace.service';
+import { CacheModule } from '../../providers/cache/cache.module';
+import { HistoryModule } from '../history/history.module';
 
 @Module({
     imports: [
         UserModule,
-        SocketModule
+        HistoryModule,
+        SocketModule,
+        CacheModule,
     ],
     providers: [
         HorseRaceGateway,

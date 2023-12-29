@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { HORSE_RACE_EVENT } from './horserace.event.constant';
+import { HORSE_RACE_EVENT } from './horserace.constant';
 import { HorseRaceRoom } from './horserace.room';
 
 @Injectable()
@@ -10,8 +10,8 @@ export class HorseRaceService {
 
   constructor() {}
 
-  handleConnection(socket: Socket) {
-    if (socket.handshake.query.gameId !== 'horse-race') return;
+  handleConnection(socket: Socket, gameId) {
+    if (socket.handshake.query.gameId !== gameId) return;
     socket.emit(HORSE_RACE_EVENT.SEND_INFO, 'horse race game');
   }
 
@@ -25,6 +25,10 @@ export class HorseRaceService {
 
   getRoomById(roomId: string): HorseRaceRoom {
     return this.rooms.find(room => room.id == roomId);
+  }
+
+  bet(socket: Socket) {
+    
   }
 
 }

@@ -5,7 +5,8 @@ export class HorseRaceRoom {
     name: string;
     users: UserDocument[] = [];
     private readonly maxUsers: number;
-
+    isReady: boolean = false;
+    bets: Map<string, number> = new Map
 
     constructor(id: string, name: string, maxUsers: number = 4) {
         this.id = id;
@@ -15,10 +16,19 @@ export class HorseRaceRoom {
 
     addUser(user: UserDocument): boolean {
         if (this.users.length >= this.maxUsers) return false;
-        this.users.push(user)
+        this.users.push(user);
+        user['roomId'] = this.id;
     }
 
-    removeUser(userId: string): void {
-        this.users = this.users.filter(user => user.id !== userId);
+    removeUser(userId: string): boolean {
+        let index: number = this.users.findIndex(user => user.id == userId);
+        if (index < 0) return false;
+        delete this.users[index]['roomId'];
+        this.users.splice(index, 1);
+        return true;
+    }
+
+    bet(userId: string, money: number) {
+        
     }
 }

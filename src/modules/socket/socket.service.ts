@@ -12,7 +12,7 @@ import { UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class SocketService {
-  private readonly logger = new Logger(TokenService.name);
+  private readonly logger = new Logger(SocketService.name);
   constructor(
     private tokenService: TokenService,
     private readonly userService: UserService,
