@@ -17,5 +17,6 @@ import { HistoryModule } from '../history/history.module';
         HorseRaceGateway,
         HorseRaceService
     ],
+    exports: [HorseRaceService]
 })
 export class HorseRaceModule { }

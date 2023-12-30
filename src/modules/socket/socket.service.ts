@@ -23,10 +23,9 @@ export class SocketService {
 
   async handleConnection(socket: Socket): Promise<void> {
     try {
-      let token: string = socket.handshake.headers.token as string;
-
+      let token: string = socket.handshake.query.token as string;
       // Verify token
-      const data = await this.tokenService.verifyJwt(token);
+      const data = this.tokenService.verifyJwt(token);
 
       if (!data) {
         this.logger.log(`Can not verify token!`);

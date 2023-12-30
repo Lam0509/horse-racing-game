@@ -13,7 +13,7 @@ import { HorseRaceService } from './horserace.service';
 import { HorseRaceRoom } from './horserace.room';
 import { CacheService } from '../../providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
-import { HorseRaceBetDto } from './horse.race.dto';
+import { HorseRaceBetDto } from './horserace.dto';
 import { HistoryService } from '../history/history.service';
 
 @WebSocketGateway()
@@ -40,13 +40,13 @@ export class HorseRaceGateway
 
   @SubscribeMessage(HORSE_RACE_EVENT.ROOMS)
   handleGetRooms(socket: Socket): void {
-    socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.rooms);
+    socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.rooms.map(room => room.info));
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.SEARCH_ROOMS)
   handleSearchRooms(socket: Socket, roomId: string): void {
     let rooms: HorseRaceRoom[] = this.horseRaceService.searchRooms(roomId);
-    socket.emit(HORSE_RACE_EVENT.SEARCH_ROOMS, rooms);
+    socket.emit(HORSE_RACE_EVENT.SEARCH_ROOMS, rooms.map(room => room.info));
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.JOIN_ROOM)
@@ -76,12 +76,23 @@ export class HorseRaceGateway
   @SubscribeMessage(HORSE_RACE_EVENT.BET)
   handleBet(socket: Socket, data: HorseRaceBetDto): void {
     // TO DO: gọi api trừ số dư ví
-    let user: UserDocument = this.cacheService.getUser(socket['address']);
-    let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
-    room.addBet(this.id, user.address, data.money, data.horse);
+    const callApiBetSucccess: boolean = true;
 
-    if (!room.isReady) return;
-    this.endGame(room);
+    if (callApiBetSucccess) {
+      let user: UserDocument = this.cacheService.getUser(socket['address']);
+      let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
+      room.addBet(this.id, user.address, data.money, data.horse);
+
+      if (!room.isReady) return;
+      this.horseRaceService.createRoom();
+      this.endGame(room);
+    }
+    else {
+      this.server
+        .to(socket.id)
+        .emit(HORSE_RACE_EVENT.BET, false);
+    }
+
   }
 
   endGame(room: HorseRaceRoom): void {
@@ -100,6 +111,7 @@ export class HorseRaceGateway
         .to(user.socketId)
         .emit(HORSE_RACE_EVENT.GIVE_REWARD, bet.reward);
     });
+    this.server.in(room.id).socketsLeave(room.id);
     this.horseRaceService.deleteRoom(room.id);
   }
 }

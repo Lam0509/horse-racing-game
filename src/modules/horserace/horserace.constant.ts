@@ -7,7 +7,7 @@ export const HORSE_RACE_EVENT = {
     BET: 'horse_race_bet',
     GIVE_REWARD: 'horse_race_give_reward',
     ROOM_USERS: 'horse_race_room_users',
-    RESULT: 'horse_race_race_result'
+    RESULT: 'horse_race_result'
 }
 
 export const HORSE = {

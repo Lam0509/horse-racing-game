@@ -2,17 +2,22 @@ import { UserDocument } from '../user/user.schema';
 import { History } from '../history/history.schema';
 import { HORSE } from './horserace.constant';
 import { Utils } from '../../providers/utils/ultils.service';
+import ShortUniqueId from 'short-unique-id';
+import { HorseRaceRoomInfo } from './horserace.interface';
 
 export class HorseRaceRoom {
+    private static readonly uid = new ShortUniqueId({ length: 6 });
+
     readonly id: string;
+    readonly maxUsers: number;
     name: string;
     users: UserDocument[] = [];
-    private readonly maxUsers: number;
     bets: History[] = [];
     result: number[];
+    currentUsers: number = 0;
 
-    constructor(id: string, name: string, maxUsers: number = 4) {
-        this.id = id;
+    constructor(name: string, maxUsers: number = 4) {
+        this.id = HorseRaceRoom.uid.rnd();
         this.name = name;
         this.maxUsers = maxUsers;
     }
@@ -21,6 +26,7 @@ export class HorseRaceRoom {
         if (this.users.length >= this.maxUsers) return false;
         this.users.push(user);
         user['roomId'] = this.id;
+        this.currentUsers = this.users.length;
     }
 
     removeUser(address: string): boolean {
@@ -28,6 +34,7 @@ export class HorseRaceRoom {
         if (index < 0) return false;
         delete this.users[index]['roomId'];
         this.users.splice(index, 1);
+        this.currentUsers = this.users.length;
         return true;
     }
 
@@ -46,7 +53,7 @@ export class HorseRaceRoom {
     }
 
     generateResult(): number[] {
-        this.result =  Utils.shuffleArray<number>(Object.values(HORSE));
+        this.result = Utils.shuffleArray<number>(Object.values(HORSE));
         return this.result;
     }
 
@@ -56,5 +63,14 @@ export class HorseRaceRoom {
 
     get winningBets(): History[] {
         return this.bets.filter(bet => bet.betOption == this.result[0]);
+    }
+
+    get info(): HorseRaceRoomInfo {
+        return {
+            id: this.id,
+            name: this.name,
+            currentUsers: this.currentUsers,
+            maxUsers: this.maxUsers
+        }
     }
 }
