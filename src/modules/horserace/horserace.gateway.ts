@@ -27,7 +27,7 @@ export class HorseRaceGateway
     private readonly socketService: SocketService,
     private cacheService: CacheService,
     private horseRaceService: HorseRaceService,
-    private historyService: HistoryService
+    private historyService: HistoryService,
   ) { }
 
   handleConnection(socket: Socket): void {
@@ -51,7 +51,7 @@ export class HorseRaceGateway
 
   @SubscribeMessage(HORSE_RACE_EVENT.JOIN_ROOM)
   handleJoinRoom(socket: Socket, roomId: string): void {
-    const room: HorseRaceRoom = this.horseRaceService.getRoomById(roomId);
+    const room: HorseRaceRoom = this.horseRaceService.getRoom(roomId);
     if (!room) return;
     const user: UserDocument = this.cacheService.getUser(socket['address']);
     if (!room.addUser(user)) return;
@@ -64,8 +64,8 @@ export class HorseRaceGateway
   @SubscribeMessage(HORSE_RACE_EVENT.LEAVE_ROOM)
   handleLeaveRoom(socket: Socket): void {
     let user: UserDocument = this.cacheService.getUser(socket['address']);
-    let room: HorseRaceRoom = this.horseRaceService.getRoomById(user['roomId']);
-    if (!room || !room.removeUser(user.id)) return;
+    let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
+    if (!room || !room.removeUser(user.address)) return;
     socket.leave(room.id);
     this.server
       .to(this.id)
@@ -76,10 +76,30 @@ export class HorseRaceGateway
   @SubscribeMessage(HORSE_RACE_EVENT.BET)
   handleBet(socket: Socket, data: HorseRaceBetDto): void {
     // TO DO: gọi api trừ số dư ví
-    this.historyService.create({
-      gameId: this.id,
-      bet: data.bet,
-      betOption, data.horse
-    })
+    let user: UserDocument = this.cacheService.getUser(socket['address']);
+    let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
+    room.addBet(this.id, user.address, data.money, data.horse);
+
+    if (!room.isReady) return;
+    this.endGame(room);
+  }
+
+  endGame(room: HorseRaceRoom): void {
+    room.generateResult();
+    room.updateReward();
+    this.historyService.create(room.bets);
+    // TO DO: gọi api cộng tiền
+    this.server
+      .to(room.id)
+      .emit(HORSE_RACE_EVENT.RESULT, room.result);
+
+    room.winningBets.forEach(bet => {
+      // TO DO : event cộng tiền phải bắn số dư thay vì số tiền thắng
+      const user: UserDocument = this.cacheService.getUser(bet.userAddress);
+      this.server
+        .to(user.socketId)
+        .emit(HORSE_RACE_EVENT.GIVE_REWARD, bet.reward);
+    });
+    this.horseRaceService.deleteRoom(room.id);
   }
 }

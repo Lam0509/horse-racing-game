@@ -8,7 +8,7 @@ export class HistoryService {
 
     constructor(@InjectModel(History.name) private historyModel: Model<History>) { }
 
-    async create(history: History): Promise<HistoryDocument> {
+    async create(history: History | History[]): Promise<HistoryDocument | HistoryDocument[]> {
         return this.historyModel.create(history);
     }
 }

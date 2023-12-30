@@ -44,6 +44,7 @@ export class SocketService {
       this.logger.log(`Address ${user.address} connected!`);
 
       // Save to cache
+      user.socketId = socket.id;
       socket['address'] = user.address;
       this.sockets.set(socket.id, socket);
     } catch (err) {

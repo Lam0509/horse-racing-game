@@ -21,6 +21,10 @@ export class User {
     unique: true,
   })
   accessToken: string;
+
+  socketId: string;
+  roomId: string;
+  isReady: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -30,7 +30,7 @@ export class History {
         type: Number,
         default: 0
     })
-    reward: number;
+    reward?: number;
 
     @Prop({
         type: String

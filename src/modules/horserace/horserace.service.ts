@@ -23,12 +23,11 @@ export class HorseRaceService {
     return this.rooms.filter(room => room.id.includes(roomId));
   }
 
-  getRoomById(roomId: string): HorseRaceRoom {
+  getRoom(roomId: string): HorseRaceRoom {
     return this.rooms.find(room => room.id == roomId);
   }
 
-  bet(socket: Socket) {
-    
+  deleteRoom(roomId: string): void {
+    this.rooms.filter(room => room.id != roomId);
   }
-
 }
