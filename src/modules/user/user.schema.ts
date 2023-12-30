@@ -22,9 +22,9 @@ export class User {
   })
   accessToken: string;
 
-  socketId: string;
-  roomId: string;
-  isReady: boolean;
+  socketId?: string;
+  roomId?: string;
+  isReady?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
