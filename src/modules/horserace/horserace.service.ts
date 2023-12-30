@@ -8,7 +8,7 @@ export class HorseRaceService {
 
   readonly rooms: HorseRaceRoom[] = [];
 
-  constructor() {}
+  constructor() { }
 
   handleConnection(socket: Socket, gameId) {
     if (socket.handshake.query.gameId !== gameId) return;
@@ -29,5 +29,15 @@ export class HorseRaceService {
 
   deleteRoom(roomId: string): void {
     this.rooms.filter(room => room.id != roomId);
+  }
+
+  createRoom(): void {
+    this.rooms.push(new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`));
+  }
+
+  initRooms(count: number): void {
+    for (let i = 0; i < count; i++) {
+      this.createRoom();
+    }
   }
 }
