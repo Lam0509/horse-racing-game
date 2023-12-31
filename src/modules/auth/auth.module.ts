@@ -3,19 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { EvmModule } from '../evm/evm.module';
 import { UserModule } from '../user/user.module';
-import { JwtModule } from '@nestjs/jwt';
-require('dotenv').config();
+import { TokenModule } from 'src/providers/token/token.module';
 
 @Module({
-  imports: [
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.ACCESS_TOKEN_EXPIRY },
-    }),
-    EvmModule,
-    UserModule,
-  ],
+  imports: [TokenModule, EvmModule, UserModule],
   providers: [AuthService],
   controllers: [AuthController],
 })

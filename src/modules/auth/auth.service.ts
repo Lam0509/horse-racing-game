@@ -7,7 +7,7 @@ import {
 import { EvmService } from '../evm/evm.service';
 import { LoginResponseDto } from './auth.dto';
 import { UserService } from '../user/user.service';
-import { JwtService } from '@nestjs/jwt';
+import { TokenService } from 'src/providers/token/token.service';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
 
   constructor(
     private readonly evmService: EvmService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
     private readonly userService: UserService,
   ) {}
 
@@ -36,7 +36,7 @@ export class AuthService {
 
     const payload = { address };
     // Gen access token
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.tokenService.signJwt(payload);
     if (!accessToken) {
       this.logger.log(`Generate token unsuccessfully!`);
       throw new BadRequestException();
