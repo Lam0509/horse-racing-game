@@ -8,21 +8,16 @@ import { Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { CacheService } from '../../providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { TokenService } from 'src/providers/token/token.service';
 
 @Injectable()
 export class SocketService {
   private readonly logger = new Logger(SocketService.name);
-  private readonly jwtSecret: string;
   constructor(
-    private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
     private readonly userService: UserService,
     private cacheService: CacheService,
-  ) {
-    this.jwtSecret = this.configService.get('security.jwtSecret');
-  }
+  ) {}
 
   private readonly sockets: Map<string, Socket> = new Map();
 
@@ -30,9 +25,7 @@ export class SocketService {
     try {
       let token: string = socket.handshake.query.token as string;
       // Verify token
-      const data = await this.jwtService.verifyAsync(token, {
-        secret: this.jwtSecret,
-      });
+      const data = await this.tokenService.verifyJwt(token);
 
       if (!data) {
         this.logger.log(`Can not verify token!`);
