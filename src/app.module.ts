@@ -9,12 +9,14 @@ import { SocketModule } from './modules/socket/socket.module';
 import { HorseRaceModule } from './modules/horserace/horserace.module';
 import { MongooseConfigService } from './config/mongo.config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CacheModule } from '@nestjs/cache-manager';
 import { InitRoomsProvider } from './providers/initrooms/init.rooms.provider';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [Configuration] }),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
+    CacheModule.register(),
     AuthModule,
     UserModule,
     SocketModule,
