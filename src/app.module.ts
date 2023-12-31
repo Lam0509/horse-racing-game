@@ -23,9 +23,6 @@ import { InitRoomsProvider } from './providers/initrooms/init.rooms.provider';
     HorseRaceModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    InitRoomsProvider
-  ],
+  providers: [AppService, InitRoomsProvider],
 })
-export class AppModule { }
+export class AppModule {}

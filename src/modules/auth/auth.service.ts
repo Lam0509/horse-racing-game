@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { EvmService } from '../evm/evm.service';
 import { LoginResponseDto } from './auth.dto';
-import { TokenService } from 'src/providers/token/token.service';
 import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
 
   constructor(
     private readonly evmService: EvmService,
-    private readonly tokenService: TokenService,
+    private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
 
@@ -36,7 +36,7 @@ export class AuthService {
 
     const payload = { address };
     // Gen access token
-    const accessToken = await this.tokenService.signJwt(payload);
+    const accessToken = await this.jwtService.signAsync(payload);
     if (!accessToken) {
       this.logger.log(`Generate token unsuccessfully!`);
       throw new BadRequestException();
@@ -52,4 +52,6 @@ export class AuthService {
 
     return { accessToken };
   }
+
+  async logOut() {}
 }

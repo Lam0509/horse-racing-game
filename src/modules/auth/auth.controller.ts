@@ -1,8 +1,9 @@
-import { Body, Controller, Logger } from '@nestjs/common';
+import { Body, Controller, Logger, UseGuards } from '@nestjs/common';
 import { Post } from '@nestjs/common';
 import { LoginRequestDto } from './auth.dto';
 import { LoginResponseDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +17,17 @@ export class AuthController {
   ): Promise<LoginResponseDto> {
     try {
       return await this.authService.logIn(address, signedMessage);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/logout')
+  async logOut(): Promise<void> {
+    try {
+      return await this.authService.logOut();
     } catch (err) {
       this.logger.error(err);
       throw err;
