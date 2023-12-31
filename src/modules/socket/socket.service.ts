@@ -5,19 +5,24 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { TokenService } from '../../providers/token/token.service';
 import { UserService } from '../user/user.service';
 import { CacheService } from '../../providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SocketService {
   private readonly logger = new Logger(SocketService.name);
+  private readonly jwtSecret: string;
   constructor(
-    private tokenService: TokenService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private cacheService: CacheService
-  ) { }
+    private cacheService: CacheService,
+  ) {
+    this.jwtSecret = this.configService.get('security.jwtSecret');
+  }
 
   private readonly sockets: Map<string, Socket> = new Map();
 
@@ -25,15 +30,18 @@ export class SocketService {
     try {
       let token: string = socket.handshake.query.token as string;
       // Verify token
-      const data = this.tokenService.verifyJwt(token);
+      const data = await this.jwtService.verifyAsync(token, {
+        secret: this.jwtSecret,
+      });
 
       if (!data) {
         this.logger.log(`Can not verify token!`);
         throw new UnauthorizedException();
       }
 
-      const user: UserDocument = this.cacheService.getUser(data.address) ||
-        await this.userService.findByAddress(data.address);
+      const user: UserDocument =
+        this.cacheService.getUser(data.address) ||
+        (await this.userService.findByAddress(data.address));
 
       if (!user) {
         this.logger.log(`No user found!`);

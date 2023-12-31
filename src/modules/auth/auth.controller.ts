@@ -21,4 +21,14 @@ export class AuthController {
       throw err;
     }
   }
+
+  @Post('/logout')
+  async logOut(): Promise<void> {
+    try {
+      return await this.authService.logOut();
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
+  }
 }
