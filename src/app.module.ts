@@ -16,16 +16,13 @@ import { InitRoomsProvider } from './providers/initrooms/init.rooms.provider';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [Configuration] }),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
-    CacheModule.register(),
+    CacheModule.register({ isGlobal: true }),
     AuthModule,
     UserModule,
     SocketModule,
     HorseRaceModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    InitRoomsProvider
-  ],
+  providers: [AppService, InitRoomsProvider],
 })
-export class AppModule { }
+export class AppModule {}

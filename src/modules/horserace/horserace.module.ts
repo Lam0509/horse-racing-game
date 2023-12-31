@@ -7,16 +7,8 @@ import { CacheModule } from '../../providers/cache/cache.module';
 import { HistoryModule } from '../history/history.module';
 
 @Module({
-    imports: [
-        UserModule,
-        HistoryModule,
-        SocketModule,
-        CacheModule,
-    ],
-    providers: [
-        HorseRaceGateway,
-        HorseRaceService
-    ],
-    exports: [HorseRaceService]
+  imports: [UserModule, HistoryModule, SocketModule, CacheModule],
+  providers: [HorseRaceGateway, HorseRaceService],
+  exports: [HorseRaceService],
 })
-export class HorseRaceModule { }
+export class HorseRaceModule {}
