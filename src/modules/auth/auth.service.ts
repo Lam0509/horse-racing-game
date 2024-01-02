@@ -8,6 +8,7 @@ import { EvmService } from '../evm/evm.service';
 import { LoginResponseDto } from './auth.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from 'src/providers/token/token.service';
+import { CacheService } from 'src/providers/cache/cache.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     private readonly evmService: EvmService,
     private readonly tokenService: TokenService,
     private readonly userService: UserService,
+    private readonly cacheService: CacheService,
   ) {}
 
   async logIn(
@@ -53,5 +55,9 @@ export class AuthService {
     return { accessToken };
   }
 
-  async logOut() {}
+  async logOut() {
+    await this.cacheService.set('user', 3);
+    const res = await this.cacheService.get('user');
+    console.log(res);
+  }
 }
