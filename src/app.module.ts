@@ -11,12 +11,13 @@ import { MongooseConfigService } from './config/mongo.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { InitRoomsProvider } from './providers/initrooms/init.rooms.provider';
+import { RedisConfigService } from './config/redis.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [Configuration] }),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
-    CacheModule.register({ isGlobal: true }),
+    CacheModule.registerAsync({ useClass: RedisConfigService, isGlobal: true }),
     AuthModule,
     UserModule,
     SocketModule,
