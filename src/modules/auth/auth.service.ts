@@ -9,6 +9,7 @@ import { LoginResponseDto } from './auth.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from 'src/providers/token/token.service';
 import { CacheService } from 'src/providers/cache/cache.service';
+import { JwtLoginPayload } from 'src/providers/token/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -52,12 +53,19 @@ export class AuthService {
       throw new BadRequestException();
     }
 
+    // Save in redis
+    await this.cacheService.set(address, accessToken);
+
     return { accessToken };
   }
 
-  async logOut() {
-    await this.cacheService.set('user', 3);
-    const res = await this.cacheService.get('user');
-    console.log(res);
+  async logOut(user: JwtLoginPayload): Promise<void> {
+    // Remove from redis
+    await this.cacheService.delete(user.address);
+
+    // Change in db
+    await this.userService.removeAccessToken(user.address);
+
+    return;
   }
 }

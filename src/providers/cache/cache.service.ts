@@ -5,28 +5,31 @@ import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CacheService {
+  private readonly users: Map<string, UserDocument> = new Map();
 
-    private readonly users: Map<string, UserDocument> = new Map();
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) { }
+  async set(key: string, value: any, ttl?: number): Promise<void> {
+    await this.cacheManager.set(key, value, ttl);
+  }
 
-    async set(key: string, value: any, ttl?: number): Promise<void> {
-        await this.cacheManager.set(key, value, ttl);
-    }
+  async get<T>(key: string): Promise<T> {
+    return await this.cacheManager.get<T>(key);
+  }
 
-    async get<T>(key: string): Promise<T> {
-        return await this.cacheManager.get<T>(key);
-    }
+  async delete(key: string): Promise<void> {
+    await this.cacheManager.del(key);
+  }
 
-    addUser(user: UserDocument): void {
-        this.users.set(user.address, user);
-    }
+  addUser(user: UserDocument): void {
+    this.users.set(user.address, user);
+  }
 
-    getUser(address: string): UserDocument {
-        return this.users.get(address);
-    }
+  getUser(address: string): UserDocument {
+    return this.users.get(address);
+  }
 
-    deleteUser(address: string): void {
-        this.users.delete(address);
-    }
+  deleteUser(address: string): void {
+    this.users.delete(address);
+  }
 }

@@ -5,10 +5,18 @@ import { EvmModule } from '../evm/evm.module';
 import { UserModule } from '../user/user.module';
 import { TokenModule } from 'src/providers/token/token.module';
 import { CacheModule } from 'src/providers/cache/cache.module';
+import { AuthGuard } from './auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [TokenModule, EvmModule, UserModule, CacheModule],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
