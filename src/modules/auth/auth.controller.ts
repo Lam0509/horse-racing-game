@@ -21,18 +21,21 @@ export class AuthController {
       return await this.authService.logIn(address, signedMessage);
     } catch (err) {
       this.logger.error(err);
-      throw err
+      throw err;
     }
   }
 
   @Post('/logout')
-  async logOut(@Req() req: Request & { user: JwtLoginPayload }): Promise<void> {
+  logOut(@Req() req: Request & { user: JwtLoginPayload }): { message: string } {
     try {
       const { user } = req;
-      return await this.authService.logOut(user);
+      this.authService.logOut(user);
+      return {
+        message: 'Logout successfully!',
+      };
     } catch (err) {
       this.logger.error(err);
-      throw err
+      throw err;
     }
   }
 }
