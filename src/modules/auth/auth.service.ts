@@ -47,7 +47,7 @@ export class AuthService {
 
     // Save address to database
     const user = { address, accessToken };
-    const result = await this.userService.create(user);
+    const result = await this.userService.updateToken(address, accessToken);
     if (!result) {
       this.logger.log(`Save user info unsuccessfully!`);
       throw new BadRequestException();
@@ -59,7 +59,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  async logOut(user: JwtLoginPayload): Promise<void> {
+  logOut(user: JwtLoginPayload): void {
     // Remove from redis
     this.cacheService.delete(user.address);
 

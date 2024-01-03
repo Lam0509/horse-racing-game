@@ -11,6 +11,14 @@ export class UserService {
     return this.userModel.create(data);
   }
 
+  updateToken(address: string, accessToken: string): Promise<UserDocument> {
+    return this.userModel.findOneAndUpdate(
+      { address },
+      { accessToken },
+      { returnOriginal: false, upsert: true },
+    );
+  }
+
   findByAddress(address: string): Promise<UserDocument> {
     return this.userModel.findOne({ address });
   }
