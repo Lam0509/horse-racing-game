@@ -1,14 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { CacheService } from '../../providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
 import { TokenService } from 'src/providers/token/token.service';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class SocketService {
@@ -24,27 +20,35 @@ export class SocketService {
   async handleConnection(socket: Socket): Promise<void> {
     try {
       let token: string = socket.handshake.query.token as string;
+      if (!token) {
+        throw new WsException('No token found');
+      }
       // Verify token
       const data = await this.tokenService.verifyJwt(token);
 
       if (!data) {
-        this.logger.log(`Can not verify token!`);
-        throw new UnauthorizedException();
+        throw new WsException('Can not verify token!');
       }
 
-      const user: UserDocument =
-        this.cacheService.getUser(data.address) ||
-        (await this.userService.findByAddress(data.address));
+      const realToken = await this.cacheService.get(data.address);
+
+      if (token !== realToken) {
+        throw new WsException('Wrong token!');
+      }
+
+      let user: UserDocument = this.cacheService.getUser(data.address);
 
       if (!user) {
-        this.logger.log(`No user found!`);
-        throw new BadRequestException();
+        user = await this.userService.findByAddress(data.address);
+        if (!user) {
+          throw new WsException('No user found!');
+        }
+        // Save to cache
+        this.cacheService.addUser(user);
       }
 
       this.logger.log(`Address ${user.address} connected!`);
 
-      // Save to cache
-      user.socketId = socket.id;
       socket['address'] = user.address;
       this.sockets.set(socket.id, socket);
     } catch (err) {

@@ -46,7 +46,6 @@ export class AuthService {
     }
 
     // Save address to database
-    const user = { address, accessToken };
     const result = await this.userService.updateToken(address, accessToken);
     if (!result) {
       this.logger.log(`Save user info unsuccessfully!`);
