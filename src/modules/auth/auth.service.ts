@@ -61,11 +61,9 @@ export class AuthService {
 
   async logOut(user: JwtLoginPayload): Promise<void> {
     // Remove from redis
-    await this.cacheService.delete(user.address);
+    this.cacheService.delete(user.address);
 
     // Change in db
-    await this.userService.removeAccessToken(user.address);
-
-    return;
+    this.userService.removeAccessToken(user.address);
   }
 }
