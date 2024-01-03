@@ -21,6 +21,7 @@ export class AuthController {
       return await this.authService.logIn(address, signedMessage);
     } catch (err) {
       this.logger.error(err);
+      throw err
     }
   }
 
@@ -31,6 +32,7 @@ export class AuthController {
       return await this.authService.logOut(user);
     } catch (err) {
       this.logger.error(err);
+      throw err
     }
   }
 }
