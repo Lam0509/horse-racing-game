@@ -5,7 +5,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { Configuration } from './config/configuration';
-import { SocketModule } from './modules/socket/socket.module';
 import { HorseRaceModule } from './modules/horserace/horserace.module';
 import { MongooseConfigService } from './config/mongo.config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -20,7 +19,6 @@ import { RedisConfigService } from './config/redis.config';
     CacheModule.registerAsync({ useClass: RedisConfigService, isGlobal: true }),
     AuthModule,
     UserModule,
-    SocketModule,
     HorseRaceModule,
   ],
   controllers: [AppController],
