@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
-import { HORSE_RACE_EVENT } from './horserace.constant';
 import { HorseRaceRoom } from './horserace.room';
+import { HorseRaceRoomInfo } from './horserace.interface';
 
 @Injectable()
 export class HorseRaceService {
 
-  readonly rooms: HorseRaceRoom[] = [];
+  private readonly rooms: HorseRaceRoom[] = [];
 
   constructor() { }
 
-  handleConnection(socket: Socket, gameId) {
-    if (socket.handshake.query.gameId !== gameId) return;
-    socket.emit(HORSE_RACE_EVENT.SEND_INFO, 'horse race game');
-  }
-
-  handleDisconnect(socket: Socket) {
-    // Handle disconnect
-  }
-
-  searchRooms(roomId: string): HorseRaceRoom[] {
-    return this.rooms.filter(room => room.id.includes(roomId));
+  searchRooms(roomId: string): HorseRaceRoomInfo[] {
+    return this.rooms.filter(room => room.id.includes(roomId)).map(room => room.info);
   }
 
   getRoom(roomId: string): HorseRaceRoom {
@@ -31,13 +21,27 @@ export class HorseRaceService {
     this.rooms.filter(room => room.id != roomId);
   }
 
-  createRoom(): void {
-    this.rooms.push(new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`));
+  createRoom(count: number = 1): void {
+    for (let i = 0; i < count; i++) {
+      this.rooms.push(new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`));
+    }
   }
 
   initRooms(count: number): void {
     for (let i = 0; i < count; i++) {
       this.createRoom();
     }
+  }
+
+  get listRooms(): HorseRaceRoomInfo[] {
+    return this.rooms.map(room => room.info);
+  }
+
+  get listRoomIds(): string[] {
+    return this.rooms.map(room => room.id);
+  }
+
+  get roomCount(): number {
+    return this.rooms.length;
   }
 }

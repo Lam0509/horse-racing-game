@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { SocketService } from '../socket/socket.service';
+import { SocketService } from '../../providers/socket/socket.service';
 import { HORSE_RACE_EVENT } from './horserace.constant';
 import { HorseRaceService } from './horserace.service';
 import { HorseRaceRoom } from './horserace.room';
@@ -15,8 +15,9 @@ import { CacheService } from '../../providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
 import { HorseRaceBetDto } from './horserace.dto';
 import { HistoryService } from '../history/history.service';
+import { HorseRaceRoomInfo } from './horserace.interface';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'horse-race' })
 export class HorseRaceGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -31,22 +32,27 @@ export class HorseRaceGateway
   ) { }
 
   handleConnection(socket: Socket): void {
-    this.horseRaceService.handleConnection(socket, this.id);
+    try {
+      this.socketService.handleConnection(socket);
+    }
+    catch (err) {
+      socket.disconnect();
+    }
   }
 
   handleDisconnect(socket: Socket): void {
-    this.horseRaceService.handleDisconnect(socket);
+    this.socketService.handleDisconnect(socket);
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.ROOMS)
   handleGetRooms(socket: Socket): void {
-    socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.rooms.map(room => room.info));
+    socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.listRooms);
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.SEARCH_ROOMS)
   handleSearchRooms(socket: Socket, roomId: string): void {
-    let rooms: HorseRaceRoom[] = this.horseRaceService.searchRooms(roomId);
-    socket.emit(HORSE_RACE_EVENT.SEARCH_ROOMS, rooms.map(room => room.info));
+    let rooms: HorseRaceRoomInfo[] = this.horseRaceService.searchRooms(roomId);
+    socket.emit(HORSE_RACE_EVENT.SEARCH_ROOMS, rooms);
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.JOIN_ROOM)
@@ -56,9 +62,7 @@ export class HorseRaceGateway
     const user: UserDocument = this.cacheService.getUser(socket['address']);
     if (!room.addUser(user)) return;
     socket.join(room.id);
-    this.server
-      .to(this.id)
-      .emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.rooms);
+    this.sendListRooms();
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.LEAVE_ROOM)
@@ -67,9 +71,7 @@ export class HorseRaceGateway
     let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
     if (!room || !room.removeUser(user.address)) return;
     socket.leave(room.id);
-    this.server
-      .to(this.id)
-      .emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.rooms);
+    this.sendListRooms();
   }
 
   @UsePipes(new ValidationPipe())
@@ -83,9 +85,10 @@ export class HorseRaceGateway
       let room: HorseRaceRoom = this.horseRaceService.getRoom(user.roomId);
       room.addBet(this.id, user.address, data.money, data.horse);
 
-      if (!room.isReady) return;
-      this.horseRaceService.createRoom();
-      this.endGame(room);
+      if (room.isReady && this.horseRaceService.roomCount <= 5) {
+        this.horseRaceService.createRoom(5);
+        this.endGame(room);
+      }
     }
     else {
       this.server
@@ -113,5 +116,12 @@ export class HorseRaceGateway
     });
     this.server.in(room.id).socketsLeave(room.id);
     this.horseRaceService.deleteRoom(room.id);
+    this.sendListRooms();
+  }
+
+  sendListRooms(): void {
+    this.server
+      .except(this.horseRaceService.listRoomIds)
+      .emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.listRooms);
   }
 }
