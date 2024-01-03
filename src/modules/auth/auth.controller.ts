@@ -1,9 +1,10 @@
-import { Body, Controller, Logger, UseGuards } from '@nestjs/common';
+import { Body, Controller, Logger, Req } from '@nestjs/common';
 import { Post } from '@nestjs/common';
 import { LoginRequestDto } from './auth.dto';
 import { LoginResponseDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
+import { JwtLoginPayload } from 'src/providers/token/token.dto';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,7 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('/login')
   async logIn(
     @Body() { address, signedMessage }: LoginRequestDto,
@@ -19,18 +21,16 @@ export class AuthController {
       return await this.authService.logIn(address, signedMessage);
     } catch (err) {
       this.logger.error(err);
-      throw err;
     }
   }
 
-  @UseGuards(AuthGuard)
   @Post('/logout')
-  async logOut(): Promise<void> {
+  async logOut(@Req() req: Request & { user: JwtLoginPayload }): Promise<void> {
     try {
-      return await this.authService.logOut();
+      const { user } = req;
+      return await this.authService.logOut(user);
     } catch (err) {
       this.logger.error(err);
-      throw err;
     }
   }
 }

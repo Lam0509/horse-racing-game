@@ -14,4 +14,8 @@ export class UserService {
   findByAddress(address: string): Promise<UserDocument> {
     return this.userModel.findOne({ address });
   }
+
+  async removeAccessToken(address: string): Promise<void> {
+    await this.userModel.updateOne({ address }, { accessToken: null });
+  }
 }
