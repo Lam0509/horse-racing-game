@@ -20,7 +20,8 @@ import { HorseRaceRoomInfo } from './horserace.interface';
 
 @WebSocketGateway({ namespace: 'horse-race' })
 export class HorseRaceGateway
-  implements OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   private server: Socket;
   readonly id: string = 'horse-race';
@@ -30,13 +31,12 @@ export class HorseRaceGateway
     private cacheService: CacheService,
     private horseRaceService: HorseRaceService,
     private historyService: HistoryService,
-  ) { }
+  ) {}
 
   async handleConnection(socket: Socket): Promise<void> {
     try {
       await this.socketService.handleConnection(socket);
-    }
-    catch (err) {
+    } catch (err) {
       socket.disconnect();
     }
   }
@@ -90,13 +90,9 @@ export class HorseRaceGateway
         this.horseRaceService.createRoom(5);
         this.endGame(room);
       }
+    } else {
+      this.server.to(socket.id).emit(HORSE_RACE_EVENT.BET, false);
     }
-    else {
-      this.server
-        .to(socket.id)
-        .emit(HORSE_RACE_EVENT.BET, false);
-    }
-
   }
 
   endGame(room: HorseRaceRoom): void {
@@ -104,11 +100,9 @@ export class HorseRaceGateway
     room.updateReward();
     this.historyService.create(room.bets);
     // TO DO: gọi api cộng tiền
-    this.server
-      .to(room.id)
-      .emit(HORSE_RACE_EVENT.RESULT, room.result);
+    this.server.to(room.id).emit(HORSE_RACE_EVENT.RESULT, room.result);
 
-    room.winningBets.forEach(bet => {
+    room.winningBets.forEach((bet) => {
       // TO DO : event cộng tiền phải bắn số dư thay vì số tiền thắng
       const user: UserDocument = this.cacheService.getUser(bet.userAddress);
       this.server
