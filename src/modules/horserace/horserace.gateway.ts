@@ -4,6 +4,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { Socket } from 'socket.io';
@@ -31,9 +32,9 @@ export class HorseRaceGateway
     private historyService: HistoryService,
   ) { }
 
-  handleConnection(socket: Socket): void {
+  async handleConnection(socket: Socket): Promise<void> {
     try {
-      this.socketService.handleConnection(socket);
+      await this.socketService.handleConnection(socket);
     }
     catch (err) {
       socket.disconnect();

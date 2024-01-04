@@ -10,6 +10,6 @@ export class LoginRequestDto {
   signedMessage: string;
 }
 
-export class LoginResponseDto {
+export type LoginResponseDto = {
   accessToken: string;
-}
+};

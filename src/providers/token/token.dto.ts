@@ -1,3 +1,3 @@
-export class JwtLoginPayload {
+export type JwtLoginPayload = {
   address: string;
-}
+};
