@@ -4,7 +4,7 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { EvmService } from '../evm/evm.service';
+import { EvmService } from '../../providers/evm/evm.service';
 import { LoginResponseDto } from './auth.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from 'src/providers/token/token.service';

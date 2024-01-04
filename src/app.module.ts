@@ -9,7 +9,6 @@ import { HorseRaceModule } from './modules/horserace/horserace.module';
 import { MongooseConfigService } from './config/mongo.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
-import { InitRoomsProvider } from './providers/initrooms/init.rooms.provider';
 import { RedisConfigService } from './config/redis.config';
 
 @Module({
@@ -22,6 +21,6 @@ import { RedisConfigService } from './config/redis.config';
     HorseRaceModule,
   ],
   controllers: [AppController],
-  providers: [AppService, InitRoomsProvider],
+  providers: [AppService],
 })
 export class AppModule {}

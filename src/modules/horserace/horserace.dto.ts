@@ -1,12 +1,28 @@
-import { IsInt, Min, IsIn } from 'class-validator';
+import { IsInt, Min, IsNotEmpty, IsString, IsBoolean } from 'class-validator';
+import { Socket } from 'socket.io';
 
-import { HORSE } from './horserace.constant';
+export class CreateRoomDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-export class HorseRaceBetDto {
-  @IsIn(Object.values(HORSE))
-  horse: number;
-
+  @IsNotEmpty()
   @IsInt()
-  @Min(1, { message: 'Bet amout must be greater than 0' })
-  money: number;
+  @Min(1, { message: 'Bet amount must be greater than 0' })
+  bet: number;
+}
+
+export class JoinRoomDto {
+  @IsNotEmpty()
+  @IsString()
+  roomId: string;
+}
+
+export type SocketUser = Socket & {
+  address: string;
+};
+
+export enum RoomStatus {
+  WAITING = 'waiting',
+  STARTING = 'starting',
 }

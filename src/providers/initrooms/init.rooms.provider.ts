@@ -4,6 +4,6 @@ export const InitRoomsProvider = {
   provide: 'INIT_ROOMS',
   inject: [HorseRaceService],
   useFactory: (horseRaceService: HorseRaceService) => {
-    horseRaceService.initRooms(10);
+    // horseRaceService.initRooms(10);
   },
 };
