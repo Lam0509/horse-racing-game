@@ -9,14 +9,17 @@ export class CacheService {
 
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
+  // Redis
   async set(key: string, value: any, ttl?: number): Promise<void> {
     await this.cacheManager.set(key, value, ttl);
   }
 
+  // Redis
   async get<T>(key: string): Promise<T> {
     return await this.cacheManager.get<T>(key);
   }
 
+  // Redis
   async delete(key: string): Promise<void> {
     await this.cacheManager.del(key);
   }

@@ -13,7 +13,7 @@ export class SocketService {
     private readonly tokenService: TokenService,
     private readonly userService: UserService,
     private cacheService: CacheService,
-  ) { }
+  ) {}
 
   private readonly sockets: Map<string, Socket> = new Map();
 
