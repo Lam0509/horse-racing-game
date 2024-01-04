@@ -4,26 +4,29 @@ import { HorseRaceRoomInfo } from './horserace.interface';
 
 @Injectable()
 export class HorseRaceService {
-
   private readonly rooms: HorseRaceRoom[] = [];
 
-  constructor() { }
+  constructor() {}
 
   searchRooms(roomId: string): HorseRaceRoomInfo[] {
-    return this.rooms.filter(room => room.id.includes(roomId)).map(room => room.info);
+    return this.rooms
+      .filter((room) => room.id.includes(roomId))
+      .map((room) => room.info);
   }
 
   getRoom(roomId: string): HorseRaceRoom {
-    return this.rooms.find(room => room.id == roomId);
+    return this.rooms.find((room) => room.id == roomId);
   }
 
   deleteRoom(roomId: string): void {
-    this.rooms.filter(room => room.id != roomId);
+    this.rooms.filter((room) => room.id != roomId);
   }
 
   createRoom(count: number = 1): void {
     for (let i = 0; i < count; i++) {
-      this.rooms.push(new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`));
+      this.rooms.push(
+        new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`),
+      );
     }
   }
 
@@ -34,11 +37,11 @@ export class HorseRaceService {
   }
 
   get listRooms(): HorseRaceRoomInfo[] {
-    return this.rooms.map(room => room.info);
+    return this.rooms.map((room) => room.info);
   }
 
   get listRoomIds(): string[] {
-    return this.rooms.map(room => room.id);
+    return this.rooms.map((room) => room.id);
   }
 
   get roomCount(): number {
