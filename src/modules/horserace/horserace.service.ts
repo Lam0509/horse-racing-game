@@ -32,7 +32,6 @@ export class HorseRaceService {
     // Save cache
     user.roomId = newRoom.id;
     user.isReady = false;
-    this.cacheService.addUser(user);
 
     // Add user to room
     newRoom.addUser(user);
@@ -54,9 +53,6 @@ export class HorseRaceService {
 
     // Return if can not add user to room
     if (!room.addUser(user)) return;
-
-    // Save cache
-    this.cacheService.addUser(user);
     return user;
   }
 
@@ -78,8 +74,6 @@ export class HorseRaceService {
     const updatedUsers = room.removeUser(user);
     if (!updatedUsers) return;
 
-    // Save cache
-    this.cacheService.addUser(user);
     return { updatedUsers, roomId: room.id };
   }
 
@@ -97,8 +91,6 @@ export class HorseRaceService {
     const result = room.changeStatusForUser(user);
     if (!result) return;
 
-    // Save cache
-    this.cacheService.addUser(user);
     return user;
   }
 
@@ -109,7 +101,7 @@ export class HorseRaceService {
 
   getRoomWinner(roomId: string): HorseRaceUser {
     const room = this.getRoom(roomId);
-    room.changeStatusToStarted()
+    room.changeStatusToStarted();
     return room.generateResult();
   }
 
@@ -118,7 +110,6 @@ export class HorseRaceService {
     for (const user of room.users) {
       user.roomId = null;
       user.isReady = false;
-      this.cacheService.addUser(user);
     }
   }
 }
