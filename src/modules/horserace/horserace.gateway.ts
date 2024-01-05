@@ -33,14 +33,12 @@ export class HorseRaceGateway
   ) {}
 
   async handleConnection(socket: Socket): Promise<void> {
-
-    socket.emit('test', 'connect success');
-
-    // try {
-    //   await this.socketService.handleConnection(socket);
-    // } catch (err) {
-    //   socket.disconnect();
-    // }
+    try {
+      await this.socketService.handleConnection(socket);
+    } catch (err) {
+      socket.emit('error', err.message);
+      // socket.disconnect();
+    }
   }
 
   handleDisconnect(@ConnectedSocket() socket: SocketUser): void {
