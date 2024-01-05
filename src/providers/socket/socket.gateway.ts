@@ -9,8 +9,7 @@ export class SocketGateway {
     try {
       await this.socketService.handleConnection(socket);
     } catch (err) {
-      socket.emit('error', err.message);
-      // socket.disconnect();
+      socket.disconnect();
     }
   }
 }
