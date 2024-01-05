@@ -13,8 +13,9 @@ import { SocketService } from '../../providers/socket/socket.service';
 import { HORSE_RACE_EVENT } from './horserace.constant';
 import { HorseRaceService } from './horserace.service';
 import { CacheService } from '../../providers/cache/cache.service';
-import { CreateRoomDto, JoinRoomDto, SocketUser } from './horserace.dto';
+import { CreateRoomDto, JoinRoomDto } from './horserace.dto';
 import { HistoryService } from '../history/history.service';
+import { SocketUser } from 'src/providers/socket/socket.interface';
 
 @WebSocketGateway({ namespace: 'horse-race' })
 export class HorseRaceGateway
@@ -61,6 +62,9 @@ export class HorseRaceGateway
         socket.address,
       );
       if (newRoom) {
+        this.logger.log(
+          `User ${socket.address} create new room ${newRoom.id}!`,
+        );
         socket.join(newRoom.id);
         socket.broadcast.emit(HORSE_RACE_EVENT.CREATE_ROOM, newRoom);
       }
@@ -78,6 +82,9 @@ export class HorseRaceGateway
       const { roomId } = data;
       const newUser = this.horseRaceService.joinRoom(roomId, socket.address);
       if (newUser) {
+        this.logger.log(
+          `New user ${socket.address} join room ${newUser.roomId}!`,
+        );
         socket.join(roomId);
         socket.to(roomId).emit(HORSE_RACE_EVENT.JOIN_ROOM, newUser);
       }
@@ -93,6 +100,7 @@ export class HorseRaceGateway
         socket.address,
       );
       if (updatedUsers) {
+        this.logger.log(`User ${socket.address} leave room ${roomId}!`);
         socket.leave(roomId);
         socket.to(roomId).emit(HORSE_RACE_EVENT.LEAVE_ROOM, updatedUsers);
       }
@@ -107,19 +115,22 @@ export class HorseRaceGateway
       const updatedUser = this.horseRaceService.changeUserStatusInRoom(
         socket.address,
       );
+      const roomId = updatedUser.roomId;
       if (updatedUser) {
-        const roomId = updatedUser.roomId;
         const roomIsReady = this.horseRaceService.checkRoomIsReady(roomId);
         if (roomIsReady) {
           const winner = this.horseRaceService.getRoomWinner(roomId);
-          this.horseRaceService.updateUsersWhenFinished(roomId);
           this.logger.log(`Winner is ${winner.address}!`);
           this.server
             .to(roomId)
             .emit(HORSE_RACE_EVENT.READY_OR_NOT, { winner, roomIsReady });
           this.server.in(roomId).socketsLeave(roomId);
+          this.horseRaceService.updateUsersWhenFinished(roomId);
           this.horseRaceService.deleteRoom(roomId);
         } else {
+          this.logger.log(
+            `Update user ${updatedUser.address} status to ${updatedUser.isReady} in room ${roomId}`,
+          );
           socket
             .to(roomId)
             .emit(HORSE_RACE_EVENT.READY_OR_NOT, { updatedUser, roomIsReady });

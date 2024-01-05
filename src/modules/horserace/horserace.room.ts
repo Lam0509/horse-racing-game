@@ -2,8 +2,8 @@ import { UserDocument } from '../user/user.schema';
 import { History } from '../history/history.schema';
 import { Utils } from '../../providers/utils/ultils.service';
 import ShortUniqueId from 'short-unique-id';
-import { HorseRaceRoomInfo } from './horserace.interface';
-import { RoomStatus } from './horserace.dto';
+import { HorseRaceRoomInfo, HorseRaceUser } from './horserace.interface';
+import { RoomStatus } from './horserace.constant';
 
 export class HorseRaceRoom {
   private static readonly uid = new ShortUniqueId({ length: 6 });
@@ -11,10 +11,10 @@ export class HorseRaceRoom {
   readonly id: string;
   name: string;
   readonly maxUsers: number;
-  users: UserDocument[] = [];
+  users: HorseRaceUser[] = [];
   bet: number = 0;
   status: RoomStatus = RoomStatus.WAITING;
-  winner: UserDocument;
+  winner: HorseRaceUser;
 
   constructor(name: string, bet: number, maxUsers: number = 4) {
     this.id = HorseRaceRoom.uid.rnd();
@@ -25,11 +25,11 @@ export class HorseRaceRoom {
 
   findUserIndex(address: string): number {
     return this.users.findIndex(
-      (user: UserDocument) => user.address === address,
+      (user: HorseRaceUser) => user.address === address,
     );
   }
 
-  addUser(user: UserDocument): boolean {
+  addUser(user: HorseRaceUser): boolean {
     const index = this.findUserIndex(user.address);
     if (index === -1 && this.users.length < this.maxUsers) {
       this.users.push(user);
@@ -38,14 +38,14 @@ export class HorseRaceRoom {
     return false;
   }
 
-  changeStatusForUser(user: UserDocument): boolean {
+  changeStatusForUser(user: HorseRaceUser): boolean {
     const index = this.findUserIndex(user.address);
     if (index === -1) return false;
     this.users.splice(index, 1, user);
     return true;
   }
 
-  removeUser(user: UserDocument): UserDocument[] {
+  removeUser(user: HorseRaceUser): HorseRaceUser[] {
     const index = this.findUserIndex(user.address);
     if (index === -1) return;
     this.users.splice(index, 1);
@@ -67,8 +67,8 @@ export class HorseRaceRoom {
     );
   }
 
-  generateResult(): UserDocument {
-    this.winner = Utils.randomFromArray<UserDocument>(this.users);
+  generateResult(): HorseRaceUser {
+    this.winner = Utils.randomFromArray<HorseRaceUser>(this.users);
     return this.winner;
   }
 

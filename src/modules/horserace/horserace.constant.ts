@@ -11,3 +11,8 @@ export const HORSE_RACE_EVENT = {
   READY_OR_NOT: 'horse_race_ready_or_not',
   LEAVE_ROOM: 'horse_race_leave_room',
 };
+
+export enum RoomStatus {
+  WAITING = 'waiting',
+  STARTING = 'starting',
+}

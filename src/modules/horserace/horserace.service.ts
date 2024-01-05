@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { HorseRaceRoom } from './horserace.room';
-import { HorseRaceRoomInfo } from './horserace.interface';
+import { HorseRaceRoomInfo, HorseRaceUser } from './horserace.interface';
 import { CacheService } from 'src/providers/cache/cache.service';
 import { UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class HorseRaceService {
-  private readonly rooms: HorseRaceRoom[] = [];
+  private rooms: HorseRaceRoom[] = [];
 
   constructor(private readonly cacheService: CacheService) {}
 
@@ -51,7 +51,7 @@ export class HorseRaceService {
   }
 
   deleteRoom(roomId: string): void {
-    this.rooms.filter((room) => room.id !== roomId);
+    this.rooms = this.rooms.filter((room) => room.id !== roomId);
   }
 
   createRoom(name: string, bet: number, address: string): HorseRaceRoom {
@@ -64,6 +64,7 @@ export class HorseRaceService {
 
     // Save cache
     user.roomId = newRoom.id;
+    user.isReady = false;
     this.cacheService.addUser(user);
 
     // Add user to room
@@ -72,7 +73,7 @@ export class HorseRaceService {
     return newRoom;
   }
 
-  joinRoom(roomId: string, address: string): UserDocument {
+  joinRoom(roomId: string, address: string): HorseRaceUser {
     const room = this.getRoom(roomId);
     // Return if no room found or enough users
     if (!room || room.checkEnoughUsers()) return;
@@ -92,7 +93,10 @@ export class HorseRaceService {
     return user;
   }
 
-  leaveRoom(address: string): { updatedUsers: UserDocument[]; roomId: string } {
+  leaveRoom(address: string): {
+    updatedUsers: HorseRaceUser[];
+    roomId: string;
+  } {
     const user = this.cacheService.getUser(address);
     // Return if user not in a room
     if (!user.roomId) return;
@@ -112,7 +116,7 @@ export class HorseRaceService {
     return { updatedUsers, roomId: room.id };
   }
 
-  changeUserStatusInRoom(address: string): UserDocument {
+  changeUserStatusInRoom(address: string): HorseRaceUser {
     const user = this.cacheService.getUser(address);
     // Return if user not in a room
     if (!user.roomId) return;
@@ -136,7 +140,7 @@ export class HorseRaceService {
     return room.isReady();
   }
 
-  getRoomWinner(roomId: string): UserDocument {
+  getRoomWinner(roomId: string): HorseRaceUser {
     const room = this.getRoom(roomId);
     return room.generateResult();
   }

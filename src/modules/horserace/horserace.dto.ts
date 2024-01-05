@@ -1,5 +1,4 @@
-import { IsInt, Min, IsNotEmpty, IsString, IsBoolean } from 'class-validator';
-import { Socket } from 'socket.io';
+import { IsInt, Min, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateRoomDto {
   @IsNotEmpty()
@@ -16,13 +15,4 @@ export class JoinRoomDto {
   @IsNotEmpty()
   @IsString()
   roomId: string;
-}
-
-export type SocketUser = Socket & {
-  address: string;
-};
-
-export enum RoomStatus {
-  WAITING = 'waiting',
-  STARTING = 'starting',
 }
