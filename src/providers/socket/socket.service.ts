@@ -50,7 +50,7 @@ export class SocketService {
     // this.logger.log(`Address ${user.address} connected!`);
     //
     // socket['address'] = user.address;
-    this.sockets.set(socket.id, socket);
+    // this.sockets.set(socket.id, socket);
   }
 
   handleDisconnect(socket: Socket): void {
