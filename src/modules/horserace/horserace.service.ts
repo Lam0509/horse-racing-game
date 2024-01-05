@@ -109,6 +109,7 @@ export class HorseRaceService {
 
   getRoomWinner(roomId: string): HorseRaceUser {
     const room = this.getRoom(roomId);
+    room.changeStatusToStarted()
     return room.generateResult();
   }
 

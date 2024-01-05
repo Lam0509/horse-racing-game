@@ -8,5 +8,5 @@ export const HORSE_RACE_EVENT = {
 
 export enum RoomStatus {
   WAITING = 'waiting',
-  STARTING = 'starting',
+  STARTED = 'started',
 }
