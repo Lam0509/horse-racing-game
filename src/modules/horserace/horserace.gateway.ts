@@ -7,34 +7,31 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { SocketService } from '../../providers/socket/socket.service';
 import { HORSE_RACE_EVENT } from './horserace.constant';
 import { HorseRaceService } from './horserace.service';
-import { CacheService } from '../../providers/cache/cache.service';
 import { CreateRoomDto, JoinRoomDto } from './horserace.dto';
-import { HistoryService } from '../history/history.service';
 import { SocketUser } from 'src/providers/socket/socket.interface';
+import { HorseraceGuard } from './horserace.guard';
 
 @WebSocketGateway({ namespace: 'horse-race' })
+@UseGuards(HorseraceGuard)
 export class HorseRaceGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
   private server: Socket;
-  // readonly id: string = 'horse-race';
   private readonly logger = new Logger(HorseRaceGateway.name);
   constructor(
     private readonly socketService: SocketService,
-    private cacheService: CacheService,
     private horseRaceService: HorseRaceService,
-    private historyService: HistoryService,
   ) {}
 
-  async handleConnection(socket: Socket): Promise<void> {
+  handleConnection(@ConnectedSocket() socket: SocketUser): void {
     try {
-      await this.socketService.handleConnection(socket);
+      this.socketService.handleConnection(socket);
     } catch (err) {
       socket.disconnect();
     }
@@ -57,8 +54,12 @@ export class HorseRaceGateway
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.ROOMS)
-  handleGetRooms(socket: Socket): void {
-    socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.listRooms);
+  handleGetRooms(@ConnectedSocket() socket: SocketUser): void {
+    try {
+      socket.emit(HORSE_RACE_EVENT.ROOMS, this.horseRaceService.listRooms);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.CREATE_ROOM)
