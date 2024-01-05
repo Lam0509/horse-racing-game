@@ -43,7 +43,7 @@ export class SocketService {
         throw new WsException('No user found!');
       }
       // Save to cache
-      this.cacheService.addUser(user);
+      this.cacheService.addUser(user.toObject());
     }
 
     this.logger.log(`Address ${user.address} connected!`);

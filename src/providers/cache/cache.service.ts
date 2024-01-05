@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UserDocument } from 'src/modules/user/user.schema';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { HorseRaceUser } from 'src/modules/horserace/horserace.interface';
 
 @Injectable()
 export class CacheService {
-  private readonly users: Map<string, UserDocument> = new Map();
+  private readonly users: Map<string, HorseRaceUser> = new Map();
 
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
@@ -24,11 +25,11 @@ export class CacheService {
     await this.cacheManager.del(key);
   }
 
-  addUser(user: UserDocument): void {
+  addUser(user: HorseRaceUser): void {
     this.users.set(user.address, user);
   }
 
-  getUser(address: string): UserDocument {
+  getUser(address: string): HorseRaceUser {
     return this.users.get(address);
   }
 
