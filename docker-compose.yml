@@ -3,6 +3,8 @@ services:
   db:
     image: mongo
     restart: always
+    ports:
+      - 8081:8081
   redis-db:
     image: redis:latest
     ports:
