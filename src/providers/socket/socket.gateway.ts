@@ -6,10 +6,11 @@ import { SocketService } from './socket.service';
 export class SocketGateway {
   constructor(private readonly socketService: SocketService) {}
   async handleConnection(socket: Socket): Promise<void> {
-    try {
-      await this.socketService.handleConnection(socket);
-    } catch (err) {
-      socket.disconnect();
-    }
+    socket.emit('test', 'connect success');
+    // try {
+    //   await this.socketService.handleConnection(socket);
+    // } catch (err) {
+    //   socket.disconnect();
+    // }
   }
 }
