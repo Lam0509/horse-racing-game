@@ -40,8 +40,20 @@ export class HorseRaceGateway
     }
   }
 
-  handleDisconnect(socket: Socket): void {
-    this.socketService.handleDisconnect(socket);
+  handleDisconnect(@ConnectedSocket() socket: SocketUser): void {
+    try {
+      const { updatedUsers, roomId } = this.horseRaceService.leaveRoom(
+        socket.address,
+      );
+      if (updatedUsers) {
+        this.logger.log(`User ${socket.address} leave room ${roomId}!`);
+        socket.leave(roomId);
+        socket.to(roomId).emit(HORSE_RACE_EVENT.LEAVE_ROOM, updatedUsers);
+        this.socketService.handleDisconnect(socket);
+      }
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   @SubscribeMessage(HORSE_RACE_EVENT.ROOMS)
