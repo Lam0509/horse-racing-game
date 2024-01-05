@@ -55,7 +55,7 @@ export class HorseRaceRoom {
   }
 
   checkIsInGame(): boolean {
-    return this.status === RoomStatus.STARTING;
+    return this.status === RoomStatus.STARTED;
   }
 
   isReady(): boolean {
@@ -63,6 +63,10 @@ export class HorseRaceRoom {
       this.users.every((user) => user.isReady) &&
       this.users.length === this.maxUsers
     );
+  }
+
+  changeStatusToStarted(): void {
+    this.status = RoomStatus.STARTED;
   }
 
   generateResult(): HorseRaceUser {
