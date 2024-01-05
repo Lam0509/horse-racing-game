@@ -1,8 +1,6 @@
-import { UserDocument } from '../user/user.schema';
-import { History } from '../history/history.schema';
 import { Utils } from '../../providers/utils/ultils.service';
 import ShortUniqueId from 'short-unique-id';
-import { HorseRaceRoomInfo, HorseRaceUser } from './horserace.interface';
+import { HorseRaceUser } from './horserace.interface';
 import { RoomStatus } from './horserace.constant';
 
 export class HorseRaceRoom {
@@ -71,51 +69,4 @@ export class HorseRaceRoom {
     this.winner = Utils.randomFromArray<HorseRaceUser>(this.users);
     return this.winner;
   }
-
-  //   removeUser(address: string): boolean {
-  //     let index: number = this.users.findIndex((user) => user.address == address);
-  //     if (index < 0) return false;
-  //     delete this.users[index]['roomId'];
-  //     this.users.splice(index, 1);
-  //     this.currentUsers = this.users.length;
-  //     return true;
-  //   }
-
-  //   addBet(
-  //     gameId: string,
-  //     userAddress: string,
-  //     money: number,
-  //     horse: number,
-  //   ): void {
-  //     this.bets.push({
-  //       gameId,
-  //       userAddress,
-  //       bet: money,
-  //       betOption: horse,
-  //     });
-  //     this.users.find((user) => user.address == userAddress).isReady = true;
-  //   }
-
-  //   get isReady(): boolean {
-  //     return this.users.every((user) => user.isReady);
-  //   }
-
-  //   updateReward() {
-  //     this.bets.forEach(
-  //       (bet) => bet.betOption == this.result && bet.reward == bet.bet,
-  //     );
-  //   }
-
-  //   get winningBets(): History[] {
-  //     return this.bets.filter((bet) => bet.betOption == this.result[0]);
-  //   }
-
-  //   get info(): HorseRaceRoomInfo {
-  //     return {
-  //       id: this.id,
-  //       name: this.name,
-  //       currentUsers: this.currentUsers,
-  //       maxUsers: this.maxUsers,
-  //     };
-  //   }
 }

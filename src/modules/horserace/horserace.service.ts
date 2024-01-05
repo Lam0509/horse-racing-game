@@ -1,46 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { HorseRaceRoom } from './horserace.room';
-import { HorseRaceRoomInfo, HorseRaceUser } from './horserace.interface';
+import { HorseRaceUser } from './horserace.interface';
 import { CacheService } from 'src/providers/cache/cache.service';
-import { UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class HorseRaceService {
   private rooms: HorseRaceRoom[] = [];
 
   constructor(private readonly cacheService: CacheService) {}
-
-  // searchRooms(roomId: string): HorseRaceRoomInfo[] {
-  //   return this.rooms
-  //     .filter((room) => room.id.includes(roomId))
-  //     .map((room) => room.info);
-  // }
-
-  // getRoom(roomId: string): HorseRaceRoom {
-  //   return this.rooms.find((room) => room.id == roomId);
-  // }
-
-  // createRoom(count: number = 1): void {
-  //   for (let i = 0; i < count; i++) {
-  //     this.rooms.push(
-  //       new HorseRaceRoom(`Room ${Math.floor(Math.random() * 1000)}`),
-  //     );
-  //   }
-  // }
-
-  // initRooms(count: number): void {
-  //   for (let i = 0; i < count; i++) {
-  //     this.createRoom();
-  //   }
-  // }
-
-  // get listRoomIds(): string[] {
-  //   return this.rooms.map((room) => room.id);
-  // }
-
-  // get roomCount(): number {
-  //   return this.rooms.length;
-  // }
 
   get listRooms() {
     return this.rooms;
