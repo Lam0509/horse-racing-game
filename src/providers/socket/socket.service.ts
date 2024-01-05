@@ -18,37 +18,38 @@ export class SocketService {
   private readonly sockets: Map<string, Socket> = new Map();
 
   async handleConnection(socket: Socket): Promise<void> {
-    let token: string = socket.handshake.query.token as string;
-    if (!token) {
-      throw new WsException('No token found');
-    }
-    // Verify token
-    const data = await this.tokenService.verifyJwt(token);
-
-    if (!data) {
-      throw new WsException('Can not verify token!');
-    }
-
-    const realToken = await this.cacheService.get(data.address);
-
-    if (token !== realToken) {
-      throw new WsException('Wrong token!');
-    }
-
-    let user: UserDocument = this.cacheService.getUser(data.address);
-
-    if (!user) {
-      user = await this.userService.findByAddress(data.address);
-      if (!user) {
-        throw new WsException('No user found!');
-      }
-      // Save to cache
-      this.cacheService.addUser(user.toObject());
-    }
-
-    this.logger.log(`Address ${user.address} connected!`);
-
-    socket['address'] = user.address;
+    socket.emit('test', 'connect success');
+    // let token: string = socket.handshake.query.token as string;
+    // if (!token) {
+    //   throw new WsException('No token found');
+    // }
+    // // Verify token
+    // const data = await this.tokenService.verifyJwt(token);
+    //
+    // if (!data) {
+    //   throw new WsException('Can not verify token!');
+    // }
+    //
+    // const realToken = await this.cacheService.get(data.address);
+    //
+    // if (token !== realToken) {
+    //   throw new WsException('Wrong token!');
+    // }
+    //
+    // let user: UserDocument = this.cacheService.getUser(data.address);
+    //
+    // if (!user) {
+    //   user = await this.userService.findByAddress(data.address);
+    //   if (!user) {
+    //     throw new WsException('No user found!');
+    //   }
+    //   // Save to cache
+    //   this.cacheService.addUser(user.toObject());
+    // }
+    //
+    // this.logger.log(`Address ${user.address} connected!`);
+    //
+    // socket['address'] = user.address;
     this.sockets.set(socket.id, socket);
   }
 
