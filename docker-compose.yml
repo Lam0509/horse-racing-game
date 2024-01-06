@@ -3,7 +3,7 @@ services:
   db:
     image: mongo
     restart: always
-  redis-db:
+  redis:
     image: redis:latest
     ports:
       - "6379:6379"  
@@ -14,7 +14,7 @@ services:
       - '3000:3000'
     depends_on:
       - db
-      - redis-db
+      - redis
   nginx:
     restart: always
     image: nginx:latest
