@@ -22,5 +22,5 @@ services:
       - ./nginx:/etc/nginx/conf.d
     ports:
       - '80:80'
-    depends_on:
-      - app   
+   depends_on:
+     - app
