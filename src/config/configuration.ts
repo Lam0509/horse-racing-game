@@ -10,6 +10,6 @@ export const Configuration = () => ({
     uri: process.env.MONGO_URI,
   },
   redis: {
-    url: 'redis://localhost:6379',
+    url: 'redis://redis:6379',
   },
 });
